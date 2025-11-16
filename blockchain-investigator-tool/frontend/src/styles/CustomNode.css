@@ -1,0 +1,49 @@
+.custom-node {
+  padding: 10px;
+  border-radius: 8px;
+  background: #f7931a;
+  border: 2px solid black;
+  min-width: 130px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+.handle {
+  background: #555;
+}
+
+.node-label {
+  font-weight: bold;
+  font-size: 12px;
+  margin-bottom: 4px;
+  color: #000;
+}
+
+.node-balance {
+  font-size: 10px;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.load-more-btn {
+  margin-top: 6px;
+  font-size: 9px;
+  padding: 3px 8px;
+  background: black;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.load-more-btn:hover:not(:disabled) {
+  background: #357ab8;
+}
+
+.load-more-btn.loading,
+.load-more-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}

@@ -1,0 +1,12 @@
+.details {
+  font-size: 18px;
+  line-height: 1.7;
+  padding: 12px 4px;
+  color: #222;
+}
+
+.no-selection {
+  color: #777;
+  font-style: italic;
+  font-size: 15px;
+}

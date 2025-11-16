@@ -1,0 +1,36 @@
+.app-wrapper {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+}
+
+.header {
+  padding: 10px;
+  background: #1a1a1a;
+  color: #d3d3d3;
+}
+
+.main-layout {
+  flex: 1;
+  display: flex;
+}
+
+.graph-wrapper {
+  background: #737373;
+  flex: 2;
+  position: relative;
+}
+
+.sidebar {
+  width: 420px;
+  padding: 12px;
+  background: #f9f9f9;
+  border-left: 1px solid #ddd;
+  overflow-y: auto;
+}
+
+.details-title {
+  margin: 20px 0 10px;
+  font-size: 18px;
+}
