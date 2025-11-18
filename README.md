@@ -15,4 +15,4 @@ Frontend+Backend tests: npm test
 For the graph visualization library, I chose React Flow because its more user-friendly and has great documentation that helped me understand. It supports custom React components that is easer to design nodes and edges that integrate good with the rest of the UI.
 I also considered other libraries like Vis.js and D3.js, but they require much more boilerplate and manual DOM manipulation to work with React. D3.js for example demands a lot of custom code for interactions and layout handling.
 
-Task vidoe https://www.youtube.com/watch?v=xlSKRpZsE64
+Task video https://www.youtube.com/watch?v=xlSKRpZsE64
