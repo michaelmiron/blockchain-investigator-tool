@@ -12,6 +12,7 @@ export default function useBlockchainGraph(log) {
   const [selected, setSelected] = useState(null);
 
   const txLimit = useRef(50);
+  const submitAbort = useRef(null);
 
   const setLimit = (val) => {
     txLimit.current = val;
@@ -76,8 +77,14 @@ export default function useBlockchainGraph(log) {
     setError(null);
 
     try {
+      // cancel any prior submit (prevents out-of-order UI updates)
+      if (submitAbort.current) submitAbort.current.abort();
+      submitAbort.current = new AbortController();
+
       const limit = txLimit.current;
-      const { data } = await fetchAddress(address, limit, 0);
+      const { data } = await fetchAddress(address, limit, 0, {
+        signal: submitAbort.current.signal,
+      });
       const txs = data.txs || [];
 
       if (!txs.length) {
@@ -110,6 +117,11 @@ export default function useBlockchainGraph(log) {
       setNodes(updated);
       setEdges(g.edges);
     } catch (err) {
+      if (err.code === "ERR_CANCELED") {
+        // user submitted a new address; ignore old request
+        setLoading(false);
+        return;
+      }
       const msg = err.message;
       setError(msg);
       log(`Error: ${msg}`);
