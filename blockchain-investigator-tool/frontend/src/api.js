@@ -5,13 +5,62 @@ const API = axios.create({
   timeout: 10000,
 });
 
-export async function fetchAddress(address, limit = 50, offset = 0) {
+// Lightweight client-side cache to avoid hammering our backend
+const CACHE_TTL_MS = 30_000;
+const CACHE_MAX = 200;
+const cache = new Map(); // key -> { expiresAt, data }
+const inFlight = new Map(); // key -> Promise<{data:any}>
+
+function getCached(key) {
+  const entry = cache.get(key);
+  if (!entry) return undefined;
+  if (entry.expiresAt <= Date.now()) {
+    cache.delete(key);
+    return undefined;
+  }
+  // touch (LRU-ish)
+  cache.delete(key);
+  cache.set(key, entry);
+  return entry.data;
+}
+
+function setCached(key, data) {
+  cache.set(key, { data, expiresAt: Date.now() + CACHE_TTL_MS });
+  while (cache.size > CACHE_MAX) {
+    const oldestKey = cache.keys().next().value;
+    cache.delete(oldestKey);
+  }
+}
+
+export async function fetchAddress(address, limit = 50, offset = 0, options = {}) {
   try {
-    const res = await API.get(`/blockchain/address/${address}`, {
-      params: { limit, offset },
-    });
-    return res;
+    const key = `addr:${address}:${limit}:${offset}`;
+    const cached = getCached(key);
+    if (cached) return { data: cached };
+
+    const existing = inFlight.get(key);
+    if (existing) return await existing;
+
+    const p = (async () => {
+      const res = await API.get(`/blockchain/address/${address}`, {
+        params: { limit, offset },
+        signal: options.signal,
+      });
+      setCached(key, res.data);
+      return { data: res.data };
+    })();
+
+    inFlight.set(key, p);
+    try {
+      return await p;
+    } finally {
+      inFlight.delete(key);
+    }
   } catch (err) {
+    if (err.code === "ERR_CANCELED") {
+      throw err;
+    }
+
     const backendMsg = err.response?.data?.error;
 
     const axiosMsg = err.message;
